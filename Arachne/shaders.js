@@ -68,7 +68,7 @@ smoothLine.fragText = `
     void main(void) {
         vec2 fc = gl_FragCoord.xy;
         vec2 pos = gl_PointCoord;
-        float rando = rand(pos);
+        float rando = rand(pos+wh);
         vec2 fwh = vec2(wh.x*2., wh.y+(wh.x*2.));
         vec2 uv = uvs * fwh;
         uv -= fwh * 0.5;
@@ -82,7 +82,7 @@ smoothLine.fragText = `
         // col = mix(pow(col, 10.)*0.25, col, sin(time*0.1+pos.y*0.5e1)*0.5+0.5);
                 col = mix(pow(col, 2.)*0.5, col, sin(t*0.1+pos.y*0.5e1)*0.5+0.5);
                // col = mix(pow(col, 10.)*0.2, col, sin(t*0.1+pos.y*0.5e1)*0.5+0.5);
-        gl_FragColor = vec4(c.rgb, c.a * (max(col, 0.) - (rando * 0.1)));
+        gl_FragColor = vec4(c.rgb, c.a * (max(col, 0.) - (rando * 0.075)));
         gl_FragColor.g = pow(col, 2.) *  0.2;
         gl_FragColor.b = pow(col, 2.) *  0.3;
         // gl_FragColor.a = min(1., gl_FragColor.a + pow(col, 2.) *  0.25);
