@@ -3,10 +3,12 @@ if (false) {
 
 silk = [];
 silkAlpha = [];
+    dotsAlpha = [];
 draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     resetLines();
     resetDots();
+    dotsAlpha = [];
     // expandingUniverse();
     drawArachne();
     silk = silk.slice(0, 2500);
@@ -17,10 +19,13 @@ draw = function() {
         silk[0+i] = silk[0+i] * 1.005; 
     }
     for (let i = 0; i < silkAlpha.length; i++) {
-        silkAlpha[i] = silkAlpha[i] + 0.0025;
+        // silkAlpha[i] = silkAlpha[i] + 0.0025;
     }
     for (let i = 0; i < silk.length; i++) {
         dots.push(silk[i]);
+    }    
+    for (let i = 0; i < silkAlpha.length; i++) {
+        dotsAlpha.push(silkAlpha[i]);
     }
     currentProgram = getProgram("smooth-dots");
     gl.useProgram(currentProgram);
@@ -59,7 +64,7 @@ drawArachne = function() {
             // }
             silk.unshift(((rr[1] + (br * 2))*-1+0.45)*2-0.25);
             silk.unshift(rr[0]*2);
-            silkAlpha.unshift(1);
+            silkAlpha.unshift(0.25+frameInc*4);
             let bx = Math.cos(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             let by = Math.sin(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             addLine(
@@ -97,7 +102,8 @@ drawArachne = function() {
         let bx = Math.cos(i - Math.PI * 0.5) * br * (2/3);
         let by = Math.sin(i - Math.PI * 0.5) * br * (2/3);
         // dots.push(bx*2*1.5, -by*2*1.5-0.25);
-        // dots.push(0+(Math.sin(i+drawCount*2e-1)*(i*0.005)), i*0.25-0.25);
+        dots.push(0+(Math.sin(i+drawCount*2e-1)*(i*0.005)), i*0.25-0.25);
+        dotsAlpha.push(1);
     }
     // for (let i = 0; i < Math.PI * 2 - (Math.PI * 2 / 1200); i += Math.PI * 2 / 75) {
         // let bx = Math.cos(i - Math.PI * 0.5) * br * (2/3);
@@ -201,7 +207,7 @@ drawDots = function(selectedProgram) {
     // Enable the attribute
     gl.enableVertexAttribArray(coord);
     gl.bindBuffer(gl.ARRAY_BUFFER, dots_alpha_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(silkAlpha), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dotsAlpha), gl.STATIC_DRAW);
     // Get the attribute location
     var alphaAttribLocation = gl.getAttribLocation(selectedProgram, "alpha");
     // Point an attribute to the currently bound VBO
