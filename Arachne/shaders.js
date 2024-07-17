@@ -190,6 +190,10 @@ smoothDots.fragText = `
     }
     void main(void) {
         vec2 pos = gl_PointCoord;
+        float instability = sin(-t*0.1+length(posxy*vec2(16./9., 1.))*0.5e1)*0.5+0.5;
+        if (instability > 0.8) {
+            discard;
+        }
         float distSquared = 1.0 - dot(pos - 0.5, pos - 0.5) * 0.5;
         float l = 1.0 - length(pos - vec2(0.5)) * 4.;
         // l += (1.0 - length(pos - vec2(0.5)) * 2.) * 0.125;
@@ -202,12 +206,13 @@ smoothDots.fragText = `
                 // l = mix(pow(l, 10.)*0.0001, l, sin(t*0.1+posxy.y*0.125e1)*0.5+0.5);
                 // l = mix(pow(l, 10.)*0.0001, l, sin(t*0.1+posxy.y*0.125e1)*0.5+0.5);
         
-        float instability = sin(t*0.1+posxy.y*0.25e1)*0.5+0.5;
+        // float instability = sin(t*0.1+posxy.y*0.25e1)*0.5+0.5;
         float vanish = length((posxy-vec2(0.0, -0.4))*4.);
         // vanish = floor(vanish);
         vanish = min(pow(vanish, 2.0)*2.5, 1.);
+        vanish = 1.0;
         float noise = rand(pos - vec2(cos(t), sin(t))) * 0.0625;
-        gl_FragColor = vec4(vec3(1.0, pow(l, 2.)*0.75, 0.25)-instability, (l+halo-noise)*0.5*vanish);
+        gl_FragColor = vec4(vec3(1.0, pow(l, 2.)*0.75, 0.25).gbr-instability, (l+halo-noise)*0.5*vanish);
     }
     // endGLSL
 `;
