@@ -13,6 +13,8 @@ let vertex_buffer, indices2_buffer, Index_Buffer, color_buffer, width_buffer, uv
 let dots = [];
 let frame = 0;
 let frameInc = Math.PI * 2 / 60;
+let seed = 10;
+const openSimplex = openSimplexNoise(seed);
 
 function setup() {
     socket = io.connect('http://localhost:8080');
@@ -124,6 +126,7 @@ draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     resetLines();
     resetDots();
+    // expandingUniverse();
     drawArachne();
     currentProgram = getProgram("smooth-dots");
     gl.useProgram(currentProgram);
@@ -296,6 +299,8 @@ drawDots = function(selectedProgram) {
 };
 
 drawArachne = function() {
+    frameInc = Math.pow((openSimplex.noise2D(drawCount * 5e-2, 0) * 0.5 + 1), 5) * 0.1;
+    // frameInc *= (Math.sin(drawCount*10)*0.5+0.5);
     let a = 4;
     let b = 3.2;
     let r = 48 / cnvs.width * 3;
@@ -305,32 +310,37 @@ drawArachne = function() {
     for (let i = 0; i < Math.PI * 2; i += Math.PI * 2 / 12) {
         if (ii !== 7 && ii !== 5 && ii !== 6 && ii !== 0) {
             let f = i;
-            let t = frame % (Math.PI * 2);
+            let t = frame;
             let x = (b + a * Math.cos(f + Math.sin(i * 2 + t) * 0.2)) * Math.cos(f + Math.sin(i * 2 + t) * 0.2) * r;
             let y = (b + a * Math.cos(f + Math.sin(i * 2 + t) * 0.2)) * Math.sin(f + Math.sin(i * 2 + t) * 0.2) * r;
             let cx = 0; let cy = 0;
             let rr = rotate2D(0, 0, x, y, Math.PI * 0.5);
-            // dots.push(rr[0]*2, ((rr[1] + (br * 2))*-1+0.45)*2-0.25);
+            // for (let k = 0; k < frameInc *1000; k++) {
+                // var angle = Math.random()*Math.PI*2;
+                // var rad = Math.random() * frameInc;
+                // let d = [Math.cos(angle) * rad, Math.sin(angle)* rad];
+                // dots.push(rr[0]*2 + d[0], ((rr[1] + (br * 2))*-1+0.45)*2-0.25+d[1]);
+            // }
             let bx = Math.cos(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             let by = Math.sin(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             addLine(
                 0, 0-0.25, bx*2, -by*2-0.25, 
-                1/2,
+                1/2/4+frameInc,
                 1, 0, 0, 0.5
             );
             addLine(
                 rr[0]*2, ((rr[1] + (br * 2))*-1+0.45)*2-0.25, bx*2, -by*2-0.25,
-                1/2,
+                1/2/4+frameInc,
                 1, 0, 0, 0.5
             );
             addLine(
-                0, 0-0.3, bx*2, -by*2-0.25, 
-                1/5,
+                0, 0-0.25, bx*2, -by*2-0.25, 
+                1/5/4+frameInc,
                 1, 0, 0, 1
             );
             addLine(
                 rr[0]*2, ((rr[1] + (br * 2))*-1+0.45)*2-0.25, bx*2, -by*2-0.25,
-                1/5,
+                1/5/4+frameInc,
                 1, 0, 0, 1
             );
         }
@@ -356,8 +366,14 @@ drawArachne = function() {
         // dots.push(bx * (3/2)*0.25*2, ((by * (3/2)*0.25 - (br*2) * 1.5)*-1-0.45*1.5)*2-0.3);
         // ii++;
     // }
+    // frame *= hit;
     frame += frameInc;
+    socket.emit('note', frameInc);
+    // hit = Math.max(1.0, hit * 0.9);
 };
+
+hit = 1;
+hit = 20
 
 function rotate2D(cx, cy, x, y, angle) {
     var rcos = Math.cos(angle),
