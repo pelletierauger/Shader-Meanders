@@ -126,6 +126,9 @@ draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     resetLines();
     resetDots();
+    // addLine(0, 1, 0, -1, 
+    //         10, 
+    //         0, 0, 0, 0.8);
     // expandingUniverse();
     drawArachne();
     currentProgram = getProgram("smooth-dots");
@@ -299,8 +302,9 @@ drawDots = function(selectedProgram) {
 };
 
 drawArachne = function() {
-    frameInc = Math.pow((openSimplex.noise2D(drawCount * 5e-2, 0) * 0.5 + 1), 5) * 0.1;
-    // frameInc *= (Math.sin(drawCount*10)*0.5+0.5);
+    frameInc = Math.pow((openSimplex.noise2D(drawCount * 5e-2, 0) * 0.5 + 1), 5) * 0.05;
+    // frameInc = Math.min(frameInc, 0.26);
+    frameInc *= (Math.sin(drawCount*10)*0.5+0.5);
     let a = 4;
     let b = 3.2;
     let r = 48 / cnvs.width * 3;

@@ -11,15 +11,19 @@ draw = function() {
     dotsAlpha = [];
     // expandingUniverse();
     drawArachne();
-    silk = silk.slice(0, 2500);
-    silkAlpha = silkAlpha.slice(0, 1250);
+    silk = silk.slice(0, 2500 * 2);
+    silkAlpha = silkAlpha.slice(0, 1250 * 2);
     for (let i = 0; i < silk.length; i += 2) {
         // silk[1+i] = silk[1+i] - 0.0025; 
-        silk[1+i] = silk[1+i] * 1.005; 
-        silk[0+i] = silk[0+i] * 1.005; 
+        silk[1+i] = silk[1+i] * 1.01;
+        silk[1+i] = silk[1+i] + 0.001;
+        silk[0+i] = silk[0+i] * 1.01;
+        let rot = rotate2D(0, 0, silk[0+i], silk[1+i], Math.PI*1e-5*i*(Math.sin(drawCount*1e-3)*0.5+0.5));
+        silk[0+i] = rot[0];
+        silk[1+i] = rot[1];
     }
     for (let i = 0; i < silkAlpha.length; i++) {
-        // silkAlpha[i] = silkAlpha[i] + 0.0025;
+        silkAlpha[i] = silkAlpha[i] + 0.0025;
     }
     for (let i = 0; i < silk.length; i++) {
         dots.push(silk[i]);
@@ -39,9 +43,10 @@ draw = function() {
     drawCount++;
 }
 drawArachne = function() {
-    frameInc = Math.pow((openSimplex.noise2D(drawCount * 5e-2, 0) * 0.5 + 1), 5) * 0.05;
+    frameInc = Math.pow((openSimplex.noise2D(drawCount * 5e-2, 0) * 0.5 + 1), 5) * 0.1;
     // frameInc = Math.PI * 2 / 24;
-    frameInc *= (Math.sin(drawCount*10)*0.5+0.5);
+    // frameInc *= (Math.sin(drawCount*10)*0.5+0.5);
+    let sc = 0.5;
     let a = 4;
     let b = 3.2;
     let r = 48 / cnvs.width * 3;
@@ -62,28 +67,28 @@ drawArachne = function() {
                 // let d = [Math.cos(angle) * rad, Math.sin(angle)* rad];
                 // dots.push(rr[0]*2 + d[0], ((rr[1] + (br * 2))*-1+0.45)*2-0.25+d[1]);
             // }
-            silk.unshift(((rr[1] + (br * 2))*-1+0.45)*2-0.25);
-            silk.unshift(rr[0]*2);
+            silk.unshift((((rr[1] + (br * 2))*-1+0.45)*2-0.25)*sc);
+            silk.unshift(rr[0]*2*sc);
             silkAlpha.unshift(0.5+frameInc*4);
             let bx = Math.cos(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             let by = Math.sin(i - Math.PI * 0.5 + Math.sin(i * 2 + t) * 0.2) * br;
             addLine(
-                0, 0-0.25, bx*2, -by*2-0.25, 
+                0, (0-0.25)*sc, bx*2*sc, (-by*2-0.25)*sc, 
                 1/2/4+frameInc,
                 1, 0, 0, 0.5
             );
             addLine(
-                rr[0]*2, ((rr[1] + (br * 2))*-1+0.45)*2-0.25, bx*2, -by*2-0.25,
+                rr[0]*2*sc, (((rr[1] + (br * 2))*-1+0.45)*2-0.25)*sc, bx*2*sc, (-by*2-0.25)*sc,
                 1/2/4+frameInc,
                 1, 0, 0, 0.5
             );
             addLine(
-                0, 0-0.25, bx*2, -by*2-0.25, 
-                1/5/4+frameInc,
+                0, (0-0.25)*sc, bx*2*sc, (-by*2-0.25)*sc, 
+                 1/5/4+frameInc,
                 1, 0, 0, 1
             );
             addLine(
-                rr[0]*2, ((rr[1] + (br * 2))*-1+0.45)*2-0.25, bx*2, -by*2-0.25,
+                rr[0]*2*sc, (((rr[1] + (br * 2))*-1+0.45)*2-0.25)*sc, bx*2*sc, (-by*2-0.25)*sc,
                 1/5/4+frameInc,
                 1, 0, 0, 1
             );
@@ -96,7 +101,7 @@ drawArachne = function() {
         let y = (b + a * Math.cos(f)) * Math.sin(f) * r;
         let cx = 0; let cy = 0;
         let rr = rotate2D(0, 0, x, y, Math.PI * 0.5);
-        dots.push(rr[0]*2, ((rr[1] + (br*2))*-1+0.45)*2-0.25);
+        dots.push(rr[0]*2*sc, (((rr[1] + (br*2))*-1+0.45)*2-0.25)*sc);
         dotsAlpha.push(1);
     }
     for (let i = 0; i < Math.PI * 2 - (Math.PI * 2 / 1200); i += Math.PI * 2 / 200) {
@@ -104,7 +109,7 @@ drawArachne = function() {
         let by = Math.sin(i - Math.PI * 0.5) * br * (2/3);
         // dots.push(bx*2*1.5, -by*2*1.5-0.25);
         // dotsAlpha.push(1);
-        dots.push(0+(Math.sin(i+drawCount*2e-1)*(i*0.005)), i*0.25-0.25);
+        dots.push(0+(Math.sin(i+drawCount*2e-1)*(i*0.005))*sc, (i*0.37-0.25)*sc);
         dotsAlpha.push(1);
     }
     // for (let i = 0; i < Math.PI * 2 - (Math.PI * 2 / 1200); i += Math.PI * 2 / 75) {

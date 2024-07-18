@@ -37,6 +37,8 @@ OSCdef.new(
         // x.set(\scratch, msg[1] * 300);
         // x.set(\bright, msg[1]*2);
         ~crushedNoise.set(\lfp, msg[1]);
+                x.set(\scratch, msg[1] * 300);
+        x.set(\bright, msg[1]*2);
         // x.set(\scratch, pow(msg[1]*20,5) * 30);
         // d = Synth.new(\pinkTest, [\frequency, msg[1] * 2]);
         // d = Synth.new(\pulseTest, [\frequency, msg[1] * 0.5]);
