@@ -807,7 +807,7 @@ void main() {
 // endGLSL
 `);
 
-// Eyes Within Eyes
+// Eyes Within Eyes, rotating
 setBothShaders(`
 // beginGLSL
 precision mediump float;
@@ -880,19 +880,20 @@ void main() {
     uv -= 0.5;
     uv.x *= ratio;
     vec2 ov = uv;
-        uv = rotateUV(uv, -time * 4e-2, 0.);
-    ov = rotateUV(ov, -time * 4e-2 + pi*0.5, 0.);
+    float ro1 = map(fract(time * 1e-2), 0., 1., pi * 0.42, pi * -1.);
+    float ro2 = map(fract(time * 1e-2 + 0.5), 0., 1., pi * 0.42, pi * -1.);
+    uv = rotateUV(uv, ro1, 0.);
+    ov = rotateUV(ov, ro2, 0.);
     uv *= map(fract(time * 1e-2), 0., 1., 2., 0.0001);
     float fade = min(map(fract(time * 1e-2), 0., 1., -3.5, 9.), 1.);
+    fade = max(0., fade);
     float col = eye(uv);
     ov *= map(fract(time * 1e-2 +0.5), 0., 1., 2., 0.0001);
     float fade2 = min(map(fract(time * 1e-2 +0.5), 0., 1., -3.5, 9.), 1.);
-    fade = max(0., fade);
-    // fade = smoothstep(0., 1., fade);
     fade2 = max(0., fade2);
-    // fade = smoothstep(0., 1., fade);
-    // ov.x *= ratio;
     float col2 = eye(ov);
+    // fade = smoothstep(0., 1., fade);
+    // fade = smoothstep(0., 1., fade);
     col = max(col * fade, col2 * fade2);
     if (col < 0.01) {
         discard;
