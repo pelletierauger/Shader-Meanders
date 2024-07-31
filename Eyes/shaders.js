@@ -400,7 +400,7 @@ void main() {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3;
@@ -474,7 +474,7 @@ void main() {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3 * 1.25;
@@ -548,7 +548,7 @@ void main() {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3 * 1.25;
@@ -683,7 +683,7 @@ float eye (vec2 uv) {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3 * 1.25;
@@ -770,7 +770,7 @@ float eye (vec2 uv) {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3 * 1.25;
@@ -865,7 +865,7 @@ float eye (vec2 uv) {
     iris2 = smoothstep(0.35, 0.65, iris2);     
     float iris3 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.);
     iris3 = smoothstep(0., 1., iris3) * 0.65;
-    float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
+    // float tri = sdEquilateralTriangle(uv * 20. + vec2(-3.5, 4.0), 1.5);
     // tri = 1.0 - smoothstep(0., 1., tri);
     col = max(pow(col, 4.), col + iris * 2.);
     col = col - iris - iris2 - iris3 * 1.25;
