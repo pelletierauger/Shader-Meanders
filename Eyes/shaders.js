@@ -677,7 +677,7 @@ float eye (vec2 uv) {
     float iris = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 4.5);
     vec2 uv2 = uv - vec2(0.15 + 0.2, 0.0);
     // iris = smoothstep(0.4, 0.5, iris);
-    iris -= (sin(atan(uv2.y, uv2.x)*30.+sin(length(uv2*100.)*2.-time*0.5)-time*1.)*0.5+0.5) * 0.5;
+    iris -= (sin(atan(uv2.y, uv2.x)*30.+sin(length(uv2*100.)*2.-time*0.5)+time*1.)*0.5+0.5) * 0.5;
     iris = smoothstep(0., 1., iris) * 0.5;
     float iris2 = 1.0 - max(0., length(uv - vec2(0.15 + 0.2, 0.0)) * 8.);
     iris2 = smoothstep(0.35, 0.65, iris2);     
