@@ -1179,4 +1179,224 @@ void main() {
 // endGLSL
 `);
 
+// Recursive eyes 2, spooky fast
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+    varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+vec2 rotateUV(vec2 uv, float rotation, float mid) {
+    return vec2(
+      cos(rotation) * (uv.x - mid) + sin(rotation) * (uv.y - mid) + mid,
+      cos(rotation) * (uv.y - mid) - sin(rotation) * (uv.x - mid) + mid
+    );
+}
+float eye(vec2 uv, float scale, float w) {
+    uv *= scale;
+    uv.y = uv.y + (0.295 * sign(uv.y));
+    float col = 1.0 - length(uv) * 2.;
+    col = abs(col) * -1.+ w;
+    // col = pow(col, 1.);
+    // col = smoothstep(0., 1., col);
+    // col = abs(col - 0.5) + 1.;
+    // col = pow(col * 3.2, 6.);
+    // col = 1.0 - smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    // col = pow(col * 1.75, 2.) + col;
+    // col = smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    // col = max(col, max(smoothstep(0., 1., col) * 0.9, (pow(col, 18.) * 1.)));
+    return col;
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    vec2 ov = gl_FragCoord.xy / resolution;
+    float ratio = resolution.x / resolution.y;
+    float spookSpeed = 2.;
+    uv -= 0.5;    
+    uv.x *= ratio;    
+    ov -= 0.5;    
+    ov.x *= ratio;
+    float scale = fract(time * 2e-2*spookSpeed);
+    scale = exp2(floor(scale)) / exp2(scale);
+    scale *= scale;
+    uv *= scale;
+    uv = rotateUV(uv, -time * 2e-2*spookSpeed, 0.);
+    // float fluc = sin(length(uv)*10.-time*1e-1)*0.5+0.5;
+    vec3 col = vec3(0.0);
+    for (int i = 0; i < 14; i++) {
+        // float sc = pow(2., float(i)) * 0.25;
+        float sc = exp2(float(i)) * 0.0625;
+        // sc = mod(sc-time*1e-1, pow(2., float(i))*0.25);
+        // sc = smoothstep(0., 1., sc);
+        float fade = min(map(sc, pow(2., 10.)*0.25*2., 1., 0., 1.), 1.0);
+        // fade = min(map(sc * scale, 30., 20., 0., 1.), 1.0);
+        vec2 uvs = (mod(float(i), 2.) == 0.) ? uv : uv.yx;
+        // uvs = rotateUV(uvs, -time * 1e-2 + float(i), 0.);
+        vec3 e = vec3(eye(uvs, sc, 0.42));
+        // vec3 e2 = vec3(eye(uvs, sc, 0.5));
+        // float br = pow(e.r, 1.) * 0.0;
+        vec3 color = (mod(float(i), 2.) == 0.) ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 0.0, 1.0);
+        e *= color;
+        // e2 *= color;
+        // float fluc = fract(time * 2e-2) * pi * 2.;
+        // fluc = sin(fluc) * 0.5 + 0.5;
+        
+        // e -= fluc - (fluc * e);
+        // float fluc = sin(time*2e-2/4.+float(i))*0.5+0.5;
+        // e *= fluc;
+        col = max(col, e);
+        // col = col + max(0., e2 * 0.5);
+    }
+    col = smoothstep(0., 1., col);
+    col = vec3(pow(col.r * 1.75, 2.), pow(col.g * 1.75, 2.), pow(col.b * 1.75, 2.)) + col;
+    col = smoothstep(0., 1., col);
+    // float col = eye(uv, 2.);
+    // float col2 = eye(uv.yx, 4.);
+    // float col3 = eye(uv, 8.);
+    // col = max(col, col2);
+    // col = max(col, col3);
+    // col *= fluc;
+    col = mix(col, vec3(pow(col.r, 7.), pow(col.g, 7.), pow(col.b, 7.)), (sin(length(ov)*10.-time*32e-2*spookSpeed)*0.5+0.5));
+    // col *= map(sin(atan(ov.y, ov.x)*10.+time), -1., 1., 0.75, 1.);
+    // col = pow(col * 1.75, 4.) + col;
+    col = smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    if (col.r < 0.01 && col.b < 0.01) {
+        discard;
+    }
+    // col = smoothstep(0., 1., col) * 0.4 + (pow(col, 4.) * 0.6);
+    float noise = rand(uv + sin(time)) * 0.075;
+    gl_FragColor = vec4(col, 1.0 - noise);
+}
+// endGLSL
+`);
+
+// Recursive eyes 2, vesica version, spooky fast
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+    varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+vec2 rotateUV(vec2 uv, float rotation, float mid) {
+    return vec2(
+      cos(rotation) * (uv.x - mid) + sin(rotation) * (uv.y - mid) + mid,
+      cos(rotation) * (uv.y - mid) - sin(rotation) * (uv.x - mid) + mid
+    );
+}
+float eye(vec2 uv, float scale, float w) {
+    uv *= scale;
+    uv.y = uv.y + (0.295 * sign(uv.y));
+    float col = 1.0 - length(uv) * 2.;
+    col = abs(col) * -1.+ w;
+    // col = pow(col, 1.);
+    // col = smoothstep(0., 1., col);
+    // col = abs(col - 0.5) + 1.;
+    // col = pow(col * 3.2, 6.);
+    // col = 1.0 - smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    // col = pow(col * 1.75, 2.) + col;
+    // col = smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    // col = max(col, max(smoothstep(0., 1., col) * 0.9, (pow(col, 18.) * 1.)));
+    return col;
+}
+float sdVesica(vec2 p, float r, float d)
+{
+    p = abs(p);
+    float b = sqrt(r*r-d*d);
+    return ((p.y-b)*d>p.x*b) ? length(p-vec2(0.0,b))
+                             : length(p-vec2(-d,0.0))-r;
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    vec2 ov = gl_FragCoord.xy / resolution;
+    float ratio = resolution.x / resolution.y;
+    float spookSpeed = 2.;
+    uv -= 0.5;    
+    uv.x *= ratio;    
+    ov -= 0.5;    
+    ov.x *= ratio;
+    float scale = fract(time * 2e-2*spookSpeed);
+    scale = exp2(floor(scale)) / exp2(scale);
+    scale *= scale;
+    uv *= scale;
+    uv = rotateUV(uv, -time * 2e-2*spookSpeed, 0.);
+    // float fluc = sin(length(uv)*10.-time*1e-1)*0.5+0.5;
+    vec3 col = vec3(0.0);
+    for (int i = 0; i < 14; i++) {
+        // float sc = pow(2., float(i)) * 0.25;
+        float sc = exp2(float(i)) * 0.0625;
+        // sc = mod(sc-time*1e-1, pow(2., float(i))*0.25);
+        // sc = smoothstep(0., 1., sc);
+        float fade = min(map(sc, pow(2., 10.)*0.25*2., 1., 0., 1.), 1.0);
+        // fade = min(map(sc * scale, 30., 20., 0., 1.), 1.0);
+        vec2 uvs = (mod(float(i), 2.) == 0.) ? uv : uv.yx;
+        // uvs = rotateUV(uvs, -time * 1e-2 + float(i), 0.);
+        float e = eye(uvs, sc, 0.42);
+        e = sdVesica(uvs * sc * vec2(1.3, 1.), 2., 1.);
+        float e2 = e;
+        float e3 = e;
+        e = abs(e - 0.5) * -1. + 0.5;
+        e2 = abs(e2 - 0.5) * -1. + 0.95;
+        e3 = abs(e3 - 0.5) * -1. + 1.;
+        // e = 
+        // e = pow(max(0., e), 1.5);
+        e = max(e, e2 * 0.5);
+        e += e3 * 0.025;
+        // vec3 e2 = vec3(eye(uvs, sc, 0.5));
+        // float br = pow(e.r, 1.) * 0.0;
+        vec3 color = (mod(float(i), 2.) == 0.) ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 0.0, 1.0);
+        // e *= color;
+        // e2 *= color;
+        // float fluc = fract(time * 2e-2) * pi * 2.;
+        // fluc = sin(fluc) * 0.5 + 0.5;
+        
+        // e -= fluc - (fluc * e);
+        // float fluc = sin(time*2e-2/4.+float(i))*0.5+0.5;
+        // e *= fluc;
+        col = max(col, vec3(e)*color);
+        // col = col + max(0., e2 * 0.5);
+    }
+    col = smoothstep(0., 1., col);
+    col = vec3(pow(col.r * 2., 1.), pow(col.g * 2., 1.), pow(col.b * 2., 1.));
+    col = smoothstep(0., 1., col);
+    // float col = eye(uv, 2.);
+    // float col2 = eye(uv.yx, 4.);
+    // float col3 = eye(uv, 8.);
+    // col = max(col, col2);
+    // col = max(col, col3);
+    // col *= fluc;
+    col = mix(col, vec3(pow(col.r, 7.), pow(col.g, 7.), pow(col.b, 7.)), (sin(length(ov)*10.-time*32e-2*spookSpeed)*0.5+0.5));
+    // col *= map(sin(atan(ov.y, ov.x)*10.+time), -1., 1., 0.75, 1.);
+    // col = pow(col * 1.75, 4.) + col;
+    // col = smoothstep(0., 1., col);
+    // col = smoothstep(0., 1., col);
+    if (col.r < 0.01 && col.b < 0.01) {
+        discard;
+    }
+    // col = smoothstep(0., 1., col) * 0.4 + (pow(col, 4.) * 0.6);
+    float noise = rand(uv + sin(time)) * 0.075;
+    gl_FragColor = vec4(col, 1.0 - noise);
+}
+// endGLSL
+`);
+
+
 }
