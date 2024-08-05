@@ -395,8 +395,8 @@ smoothDotsVertex.vertText = `
         y = map(y, 0., 1., -1., 1.);
         float a = time * 1e-1;
         vec4 pos = vec4(x, y, 1.0, 1.0);
-        pos.x += rand(pos.xy) * 0.01;
-        pos.y += rand(pos.xy) * 0.01;
+        pos.x += rand(pos.xy) * 0.005;
+        pos.y += rand(pos.xy) * 0.005;
         
         pos = yRotate(0.4) * pos;
         // pos = translate(0.0, 1.1, 0.5) * xRotate(pi * 1.75) * pos;
@@ -548,7 +548,7 @@ smoothDotsVertex.vertText = `
         pos.xy *= 1.6;
         pos.x *= ratio;
         gl_Position = vec4(pos.x, pos.y, 0.0, pos.z);
-        gl_Position.y += cos(time*4e-3+729.99) * 2.;
+        gl_Position.y += cos(time*4e-3+729.99) * 2. + 0.02;
         gl_PointSize = 3./pos.z;
         z = pos.z;
         posUnit = pos.xy;
@@ -589,7 +589,7 @@ smoothDotsVertex.fragText = `
         // des = pow(des, 0.95);
         // des = smoothstep(0., 1., des);
         gl_FragColor.rgb = Desaturate(gl_FragColor.rgb, des).rgb;
-        gl_FragColor.a *= 1.0 - min(0.7, des * 2.);
+        gl_FragColor.a *= 1.0 - min(0.7, des * 2.-light);
         // gl_FragColor.a = 1.0 - exp( -gl_FragColor.a );
     }
     // endGLSL
