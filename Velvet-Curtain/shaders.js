@@ -1191,7 +1191,7 @@ smoothDotsVertex.vertText = `
                 gl_Position.y += 0.1;
         // gl_Position.x += cos(time*4e-3+729.99) * 2.;
         gl_Position.y += 0.3;
-        gl_PointSize = 4./pos.z;
+        gl_PointSize = 3.5/pos.z;
         gl_PointSize += (cos(-t*0.0125+(posUnit.x*81e1+posUnit.y*31e1))*0.5+0.5)*2.;
         if (abs(pos.x) < 0.1) {
             gl_PointSize = 0.0;
