@@ -125,7 +125,7 @@ function setResolution(r) {
     cnvs.height = window.innerHeight * resolution;
 }
 
-function keyPressed() {
+keyPressed = function() {
     if (keysActive) {
         if (keyCode === 32) {
             if (looping) {
@@ -135,6 +135,9 @@ function keyPressed() {
                 loop();
                 looping = true;
             }
+        }
+        if (key == 'p' || key == 'P') {
+            drawCount = 0;
         }
     }
 }
