@@ -20,8 +20,8 @@ function setup() {
     pixelDensity(1);
     noCanvas();
     cnvs = document.getElementById('cnvs');
-    cnvs.width = window.innerWidth * resolution;
-    cnvs.height = window.innerHeight * resolution;
+    // cnvs.width = window.innerWidth * resolution;
+    // cnvs.height = window.innerHeight * resolution;
     gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
