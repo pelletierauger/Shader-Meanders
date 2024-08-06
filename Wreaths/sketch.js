@@ -2,14 +2,16 @@ let looping = true;
 let keysActive = true;
 let socket, cnvs, gl, shaderProgram, time;
 let drawCount = 0, drawIncrement = 1;
-let positionBuffer, colorBuffer, indexBuffer;
-let positionAttribLocation, colorAttribLocation, indexAttribLocation, resolutionUniformLocation;
+let positionBuffer, colorBuffer, indexBuffer, index2Buffer;
+let positionAttribLocation, colorAttribLocation;
+let indexAttribLocation, index2AttribLocation, resolutionUniformLocation;
 let positions, colors;
 let currentProgram;
 let ratio;
 let resolution = 1;
 let branches = 0;
 let indices = [];
+let indices2 = [];
 // for (let i = 0; i < 1000000; i++) {
 //     indices.push(i);
 // }
@@ -35,6 +37,7 @@ function setup() {
     positionBuffer = gl.createBuffer();
     colorBuffer = gl.createBuffer();
     indexBuffer = gl.createBuffer();
+    index2Buffer = gl.createBuffer();
 
     shadersReadyToInitiate = true;
     initializeShaders();
@@ -44,6 +47,7 @@ function setup() {
     positionAttribLocation = gl.getAttribLocation(currentProgram, "position");
     colorAttribLocation = gl.getAttribLocation(currentProgram, "color");
     indexAttribLocation = gl.getAttribLocation(currentProgram, "index");
+    index2AttribLocation = gl.getAttribLocation(currentProgram, "index2");
 
     resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
     gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);
@@ -152,7 +156,16 @@ drawDots = function(selectedProgram) {
     // Point an attribute to the currently bound buffer
     gl.vertexAttribPointer(indexAttribLocation, 1, gl.FLOAT, false, 0, 0);
     // Enable the color attribute
-    gl.enableVertexAttribArray(indexAttribLocation);
+    gl.enableVertexAttribArray(indexAttribLocation);    
+    // -------------------------------------------
+    // Updating the index2 data
+    // -------------------------------------------
+    gl.bindBuffer(gl.ARRAY_BUFFER, index2Buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(indices2), gl.STATIC_DRAW);
+    // Point an attribute to the currently bound buffer
+    gl.vertexAttribPointer(index2AttribLocation, 1, gl.FLOAT, false, 0, 0);
+    // Enable the color attribute
+    gl.enableVertexAttribArray(index2AttribLocation);
     // -------------------------------------------
     // Updating the resolution uniform
     // -------------------------------------------
@@ -213,11 +226,11 @@ makeWreath = function() {
         var green = map(Math.abs(Math.sin(i)), 0, 1, 50, 205);
         // fill(255, green, 0);
         // stroke(255, green, 0);
-        seed(vec1.x, vec1.y, angle, 10, green);
+        seed(vec1.x, vec1.y, angle, 10, green, i);
     }
 };
 
-seed = function(x, y, a, h, green) {
+seed = function(x, y, a, h, green, i) {
     if (branches < 60000) {
         branches++;
         var s = {x: x, y: y};
@@ -232,15 +245,16 @@ seed = function(x, y, a, h, green) {
         positions.push(s.x / 100, s.y / 100, 0);
         colors.push(red / 255, green / 255, blue / 255, alpha / 255);
         indices.push(index);
+        indices2.push(i);
         index++;
         if (hyp > 0.2) {
             setTimeout(function() {
-                seed(newX, newY, angle, hyp, green);
+                seed(newX, newY, angle, hyp, green, i);
             }, 1);
         }
         if (hyp > 0.2 && (Math.round((hyp * 13)) % 20) == 0) {
             setTimeout(function() {
-                seed(newX, newY, angle + random(-0.6, 0.6), hyp, green);
+                seed(newX, newY, angle + random(-0.6, 0.6), hyp, green, i);
             }, 1);
         }
     }
