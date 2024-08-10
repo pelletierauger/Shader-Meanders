@@ -108,18 +108,19 @@ function setup() {
 
 draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
-    currentProgram = getProgram("smooth-dots-vertex");
-    gl.useProgram(currentProgram);
-    // drawSpiral(currentProgram);
-    currentProgram = getProgram("smooth-dots-3D");
-    gl.useProgram(currentProgram);
-    drawEye(currentProgram);
-    draw3DDots(currentProgram);
+    // drawOgiveWindows();
+    drawLancetWindows();
+    // drawEye(currentProgram);
     drawCount += drawIncrement;
 };
 
-drawSpiral = function(selectedProgram) {
-        // -------------------------------------------
+drawOgiveWindows = function() {
+    currentProgram = getProgram("smooth-dots-vertex");
+    gl.useProgram(currentProgram);
+    resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
+    gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);
+    timeUniformLocation = gl.getUniformLocation(currentProgram, "time");
+    // -------------------------------------------
     // Updating the indices buffer
     // -------------------------------------------
     gl.bindBuffer(gl.ARRAY_BUFFER, indicesBuffer);
@@ -131,6 +132,27 @@ drawSpiral = function(selectedProgram) {
     gl.uniform1f(timeUniformLocation, drawCount);
     // 57600 = (240 * 240)
     gl.drawArrays(gl.POINTS, 0, 360 * 360);
+};
+
+drawLancetWindows = function() {
+    currentProgram = getProgram("lancet-windows");
+    gl.useProgram(currentProgram);
+    resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
+    gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);
+    timeUniformLocation = gl.getUniformLocation(currentProgram, "time");
+        // -------------------------------------------
+    // Updating the indices buffer
+    // -------------------------------------------
+    gl.bindBuffer(gl.ARRAY_BUFFER, indicesBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+    // Point an attribute to the currently bound VBO
+    gl.vertexAttribPointer(vertexIDAttribLocation, 1, gl.FLOAT, false, 0, 0);
+    // Enable the attribute
+    gl.enableVertexAttribArray(vertexIDAttribLocation);
+    timeUniformLocation = gl.getUniformLocation(currentProgram, "time");
+    gl.uniform1f(timeUniformLocation, drawCount);
+    // 57600 = (240 * 240)
+    gl.drawArrays(gl.POINTS, 0, Math.pow(700, 2));
 };
 
 function setResolution(r) {
@@ -263,6 +285,7 @@ drawEye = function() {
 //         // vertices.push(-x * 0.005 + 1, y * 0.5 - 1, 1, 1);
         
 //     }
+    draw3DDots(currentProgram);
 };
 
 if (false) {
@@ -286,6 +309,8 @@ drawEye = function() {
                 vertices.push(x * 0.5, -y * 0.5 * 0.8, 1, 1);
             }
         }
+    
+    draw3DDots(currentProgram);
 };
 
 drawEye = function() {
@@ -318,11 +343,14 @@ drawEye = function() {
             vertices.push(x, y, 1, size * 2);
         }
     }
+    draw3DDots(currentProgram);
 };
 
 }
 
 draw3DDots = function(selectedProgram) {
+        currentProgram = getProgram("smooth-dots-3D");
+    gl.useProgram(currentProgram);
     gl.bindBuffer(gl.ARRAY_BUFFER, dots_buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     // Get the attribute location
