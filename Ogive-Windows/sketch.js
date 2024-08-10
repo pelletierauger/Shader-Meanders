@@ -110,11 +110,11 @@ draw = function() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     currentProgram = getProgram("smooth-dots-vertex");
     gl.useProgram(currentProgram);
-    drawSpiral(currentProgram);
-    // currentProgram = getProgram("smooth-dots-3D");
-    // gl.useProgram(currentProgram);
-    // drawEye(currentProgram);
-    // draw3DDots(currentProgram);
+    // drawSpiral(currentProgram);
+    currentProgram = getProgram("smooth-dots-3D");
+    gl.useProgram(currentProgram);
+    drawEye(currentProgram);
+    draw3DDots(currentProgram);
     drawCount += drawIncrement;
 };
 
@@ -291,14 +291,14 @@ drawEye = function() {
 drawEye = function() {
     vertices = [];
     inc = PI / 500;
-    let scale = (-drawCount * 0.125e-1) % 1;
+    let scale = (-drawCount * 0.25e-1) % 1;
     scale = Math.pow(2, Math.floor(scale)) / Math.pow(2, scale);
     scale *= scale;
-    for (let j = 0; j < 12; j++) {
-         inc = PI / 500;
+    for (let j = 0; j < 20; j++) {
+         inc = PI / 800;
         // let size = map(j, 0, 7, 0.3, 2) * scale;
         let sc = Math.pow(2, (1+j)) * 0.01225 * scale;
-        let size = 0.1 + sc * 0.5;
+        let size = Math.min(1.4, 0.1 + sc * 0.5);
         for (let i = Math.PI / 4; i < Math.PI / 4 * 3; i += inc) {
             let x = (Math.cos(i) * sc) *0.83;
             let y = (Math.sin(i) * sc) - Math.sin(Math.PI/4) * sc;
@@ -312,10 +312,10 @@ drawEye = function() {
             }
         }
          inc = PI / 300;
-        for (let i = 0 ; i < Math.PI * 2 - inc; i += inc) {
-            let x = Math.cos(i-drawCount*0.5e-1) * sc * 0.6;
-            let y = Math.sin(i-drawCount*0.5e-1) * sc * 0.6;
-            vertices.push(x, y, 1, size*2);
+        for (let i = 0 ; i < Math.PI * 2; i += inc) {
+            let x = Math.cos(i*i*100+drawCount*1e-2) * i * sc * 0.59;
+            let y = Math.sin(i*i*100+drawCount*1e-2) * i * sc * 0.59;
+            vertices.push(x, y, 1, size * 2);
         }
     }
 };
