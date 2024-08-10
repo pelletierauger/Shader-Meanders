@@ -327,7 +327,7 @@ drawEye = function() {
         for (let i = Math.PI / 4; i < Math.PI / 4 * 3; i += inc) {
             let x = (Math.cos(i) * sc) *0.83;
             let y = (Math.sin(i) * sc) - Math.sin(Math.PI/4) * sc;
-            let xy = rotate(0, 0, x, y, -drawCount * 0.5e-1)
+            // let xy = rotate(0, 0, x, y, -drawCount * 0.5e-1)
             if (j % 2 == 0) {
                  vertices.push(x, y, 1, size);
                  vertices.push(x, -y, 1, size);
