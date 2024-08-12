@@ -346,6 +346,45 @@ drawEye = function() {
     draw3DDots(currentProgram);
 };
 
+drawEye = function() {
+    vertices = [];
+    inc = PI / 500;
+    let scale = (-drawCount * 0.25e-1) % 1;
+    scale = Math.pow(2, Math.floor(scale)) / Math.pow(2, scale);
+    scale *= scale;
+    for (let j = 0; j < 20; j++) {
+         inc = PI / 800;
+        // let size = map(j, 0, 7, 0.3, 2) * scale;
+        let sc = Math.pow(2, (1+j)) * 0.01225 * scale;
+        let size = Math.min(1.4, 0.1 + sc * 0.5);
+        for (let i = Math.PI / 4; i < Math.PI / 4 * 3; i += inc) {
+            let x = (Math.cos(i) * sc) *0.83;
+            let y = (Math.sin(i) * sc) - Math.sin(Math.PI/4) * sc;
+            // let xy = rotate(0, 0, x, y, -drawCount * 0.5e-1)
+            if (j % 2 == 0) {
+                 vertices.push(x, y, 1, size);
+                 vertices.push(x, -y, 1, size);
+            } else {
+                 vertices.push(y, x, 1, size);
+                 vertices.push(-y, x, 1, size);
+            }
+        }
+         inc = PI / 300;
+        for (let i = 0 ; i < Math.PI * 2; i += inc) {
+            let x = Math.cos(i*i*100+drawCount*1e-2) * i * sc * 0.59;
+            let y = Math.sin(i*i*100+drawCount*1e-2) * i * sc * 0.59;
+            vertices.push(x, y, 1, size * 2);
+        }
+        inc = PI / 500;
+        for (let i = 0 ; i < Math.PI * 2; i += inc) {
+            let x = Math.cos(i) * sc * 0.59;
+            let y = Math.sin(i) * sc * 0.59;
+            vertices.push(x, y, 1, size * 1);
+        }
+    }
+    draw3DDots(currentProgram);
+};
+
 }
 
 draw3DDots = function(selectedProgram) {
