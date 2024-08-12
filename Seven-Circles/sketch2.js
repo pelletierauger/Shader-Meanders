@@ -57,15 +57,15 @@ function setup() {
     resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
     gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);
 
-    setTimeout(function() {
-        scdConsoleArea.setAttribute("style", "display:block;");
-        scdArea.style.display = "none";
-        scdConsoleArea.setAttribute("style", "display:none;");
-        jsCmArea.style.height = "685px";
-        jsArea.style.display = "block";
-        displayMode = "js";
-        javaScriptEditor.cm.refresh();
-    }, 1);
+    // setTimeout(function() {
+    //     scdConsoleArea.setAttribute("style", "display:block;");
+    //     scdArea.style.display = "none";
+    //     scdConsoleArea.setAttribute("style", "display:none;");
+    //     jsCmArea.style.height = "685px";
+    //     jsArea.style.display = "block";
+    //     displayMode = "js";
+    //     javaScriptEditor.cm.refresh();
+    // }, 1);
     setTimeout( function() {
         keysControl.addEventListener("mouseenter", function(event) {
         document.body.style.cursor = "none";
