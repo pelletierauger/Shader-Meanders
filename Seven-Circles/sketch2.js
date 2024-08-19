@@ -112,8 +112,9 @@ draw = function() {
     currentProgram = getProgram("smooth-dots");
     gl.useProgram(currentProgram);
     
-    drawSpiral(currentProgram);
-    drawSpiral2(currentProgram);
+    // drawSpiral(currentProgram);
+    // drawSpiral2(currentProgram);
+    drawSpiral3(currentProgram);
     drawCount += drawIncrement;
 };
 
@@ -193,6 +194,53 @@ drawSpiral2 = function(selectedProgram) {
     //     alphas[currentCircle] = 1;
     // }
     currentProgram = smoothDots2.program;
+    gl.useProgram(currentProgram);
+    resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
+    gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);
+    timeUniformLocation = gl.getUniformLocation(currentProgram, "time");
+    gl.uniform1f(timeUniformLocation, drawCount);
+    // -------------------------------------------
+    // Updating the position data
+    // -------------------------------------------
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    // -------------------------------------------
+    // Updating the color data
+    // -------------------------------------------
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    // -------------------------------------------
+    // Drawing
+    // -------------------------------------------
+    gl.drawArrays(gl.POINTS, 0, positions.length/3);
+};
+
+drawSpiral3 = function(selectedProgram) {
+    positions = [];
+    colors = [];
+    let n = 27000;
+    let t = drawCount * 1e-6 + 1e2;
+    
+    for (let i = 0; i < 6; i++) {
+        let a = -i * (Math.PI*2/6) - drawCount * 1e-2*0;
+        let x = Math.cos(a + Math.PI * 0.5) * 0.213;
+        let y = Math.sin(a + Math.PI * 0.5) * 0.213;
+        positions.push(x * ratio, y, 0);
+        colors.push(1.0, 0.0, 0.0, 1);
+    }
+    
+    positions.push(0, 0, 0);
+    colors.push(1.0, 0.0, 0.0, 1);
+    // for (let i = 0; i < alphas.length; i++) {
+    //     alphas[i] *= 0.95;
+    // }
+    // counter++;
+    // if (counter == 8) {
+    //     counter = 0;
+    //     currentCircle = (currentCircle + 1) % 7;
+    //     alphas[currentCircle] = 1;
+    // }
+    currentProgram = smoothDots.program;
     gl.useProgram(currentProgram);
     resolutionUniformLocation = gl.getUniformLocation(currentProgram, "resolution");
     gl.uniform2f(resolutionUniformLocation, cnvs.width, cnvs.height);

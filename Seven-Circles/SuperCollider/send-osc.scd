@@ -257,3 +257,5 @@ var melody = Pseq((0..6), inf).asStream;
 ~kickPattern.stop;
 ~hatsPattern.stop;
 )
+
+~toFreq.("E0")
