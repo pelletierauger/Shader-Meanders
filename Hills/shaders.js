@@ -60,8 +60,10 @@ void main() {
     vec2 uv = gl_FragCoord.xy / resolution + vec2(0., -0.);
     // uv -= 0.5;
     vec2 muv = uv;
-    uv.x += time * 1e-3;
-    muv.x += time * 3e-3;
+    // uv.x += time * 1e-3;
+    // muv.x += time * 3e-3;
+    uv.x += 38687. * 1e-3;
+    muv.x += 38687. * 3e-3;
     float rando = rand(uv+time*1e-2) * 0.05;
     float h = sin(uv.x * 10. + 0.1)*0.5+0.5;
     float h2 = sin(uv.x * 8. - 2.5)*0.5+0.5;
