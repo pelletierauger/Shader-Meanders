@@ -24,7 +24,8 @@ function setup() {
     cnvs = document.getElementById('cnvs');
     // cnvs.width = window.innerWidth * resolution;
     // cnvs.height = window.innerHeight * resolution;
-    gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
+    // gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
+    gl = cnvs.getContext('webgl', {antialias: false, depth: false});
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(false);
