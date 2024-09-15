@@ -204,7 +204,8 @@ void main() {
     }
 }
 
-function draw() {
+draw = function() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform1f(time, drawCount);
     gl.uniform2f(resolution, cnvs.width, cnvs.height);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
