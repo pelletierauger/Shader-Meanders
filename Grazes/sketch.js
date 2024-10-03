@@ -24,7 +24,7 @@ function setup() {
     background(0);
     fill(255, 50);
     noStroke();
-// Smooth triangle
+// Flame, long and thin
 setBothShaders(`
 // beginGLSL
 precision mediump float;
@@ -38,31 +38,47 @@ float map(float value, float min1, float max1, float min2, float max2) {
 float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
 }
-float smoothTriangle(vec2 p, vec2 p0, vec2 p1, vec2 p2, float smoothness) {
-    vec3 e0, e1, e2;
-    e0.xy = normalize(p1 - p0).yx * vec2(+1.0, -1.0);
-    e1.xy = normalize(p2 - p1).yx * vec2(+1.0, -1.0);
-    e2.xy = normalize(p0 - p2).yx * vec2(+1.0, -1.0);
-    e0.z = dot(e0.xy, p0) - smoothness;
-    e1.z = dot(e1.xy, p1) - smoothness;
-    e2.z = dot(e2.xy, p2) - smoothness;
-    float a = max(0.0, dot(e0.xy, p) - e0.z);
-    float b = max(0.0, dot(e1.xy, p) - e1.z);
-    float c = max(0.0, dot(e2.xy, p) - e2.z);
-    return smoothstep(smoothness * 2.0, 1e-7, length(vec3(a, b, c)));
-}
 void main() {
     vec2 uv = gl_FragCoord.xy / resolution.xy - vec2(0.5);
     float ratio = resolution.x / resolution.y;
     uv.x *= ratio;
-    vec2 v0 = vec2(0.0, -0.25);
-    vec2 v1 = vec2(0.25, 0.25);
-    vec2 v2 = vec2(-0.25, 0.25);
-    float a = smoothTriangle(uv, v0, v1, v2, 0.025);
-    // a = (abs(a - 0.5) * -1. + 0.5) * 2.;
-    vec3 col = vec3(1.0, 0.0, 0.0);
-    col *= a;
-    gl_FragColor = vec4(col, 1.0);
+    // uv *= .;
+    float m = 0.125;
+    uv.x *= map(uv.y, 0., -0.55, 1., 0.2);
+    // uv += vec2(sin(uv.y*10.-time*1e-1), cos(uv.x*10.-time*1e-1))*0.025;
+    uv.x += sin(time * -3e-1 + uv.y * 2e1) * map(uv.y, 1., -0.3, 1., 0.) * 2e-2;
+    // uv.x += abs(fract((uv.y-time*1e-2) * 5.)-0.5) * 0.1;
+    // uv.x = mod((uv.x*1.)+(m*0.5), m)-(m*0.5);
+    float c = length(uv);
+    uv *= 1.15;
+    float size = 8.;
+    float smoothness = 2e-2;
+    float c0 = length(uv+vec2(size,0.));
+    float c1 = length(uv-vec2(size,0.));
+    float c0A = smoothstep(size + smoothness, size, c0);
+    float c1A = smoothstep(size + smoothness, size, c1);
+    size *= 0.7;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    float c0B = smoothstep(size + smoothness * 2., size, c0);
+    float c1B = smoothstep(size + smoothness * 2., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    c = max((c0A * c1A), (c0B * c1B * 0.95));
+    size *= 0.25;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    c0B = smoothstep(size + smoothness * 10., size, c0);
+    c1B = smoothstep(size + smoothness * 10., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    c = smoothstep(0., 1., c);
+    float halo = max((c0A * c1A), (c0B * c1B * 0.35));
+    // c = max(c, halo);
+    // c = c1 * 0.5 + c0 * 0.5;
+    float noise = rand(uv + sin(time)) * 0.075;
+    gl_FragColor = vec4(vec3(c), 1.0);
+    gl_FragColor = vec4(vec3(1.0, pow(c,5.)*0.75, pow(c,5.)*0.5*0.75), (c+halo)*0.7-noise);
 }
 // endGLSL
 `);

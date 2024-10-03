@@ -517,6 +517,129 @@ void main() {
 // endGLSL
 `);
 
+// Flame, long and thin
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution.xy - vec2(0.5);
+    float ratio = resolution.x / resolution.y;
+    uv.x *= ratio;
+    // uv *= .;
+    float m = 0.125;
+    uv.x *= map(uv.y, 0., -0.55, 1., 0.2);
+    // uv += vec2(sin(uv.y*10.-time*1e-1), cos(uv.x*10.-time*1e-1))*0.025;
+    uv.x += sin(time * -3e-1 + uv.y * 2e1) * map(uv.y, 1., -0.3, 1., 0.) * 2e-2;
+    // uv.x += abs(fract((uv.y-time*1e-2) * 5.)-0.5) * 0.1;
+    // uv.x = mod((uv.x*1.)+(m*0.5), m)-(m*0.5);
+    float c = length(uv);
+    uv *= 1.15;
+    float size = 8.;
+    float smoothness = 2e-2;
+    float c0 = length(uv+vec2(size,0.));
+    float c1 = length(uv-vec2(size,0.));
+    float c0A = smoothstep(size + smoothness, size, c0);
+    float c1A = smoothstep(size + smoothness, size, c1);
+    size *= 0.7;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    float c0B = smoothstep(size + smoothness * 2., size, c0);
+    float c1B = smoothstep(size + smoothness * 2., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    c = max((c0A * c1A), (c0B * c1B * 0.95));
+    size *= 0.25;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    c0B = smoothstep(size + smoothness * 10., size, c0);
+    c1B = smoothstep(size + smoothness * 10., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    c = smoothstep(0., 1., c);
+    float halo = max((c0A * c1A), (c0B * c1B * 0.35));
+    // c = max(c, halo);
+    // c = c1 * 0.5 + c0 * 0.5;
+    float noise = rand(uv + sin(time)) * 0.075;
+    gl_FragColor = vec4(vec3(c), 1.0);
+    gl_FragColor = vec4(vec3(1.0, pow(c,5.)*0.75, pow(c,5.)*0.5*0.75), (c+halo)*0.7-noise);
+}
+// endGLSL
+`);
+
+// Flame, thick
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution.xy - vec2(0.5);
+    float ratio = resolution.x / resolution.y;
+    uv.x *= ratio;
+    // uv *= .;
+    float m = 0.25;
+        uv.y = uv.y * (2. + sin(time*1e-1)) + sin(time*1e-1) * 0.0625;
+    // uv.x = mod((uv.x*1.)+(m*0.5), m)-(m*0.5);
+    uv.x *= map(uv.y, 0., -0.55, 1., 0.3);
+    // uv += vec2(sin(uv.y*10.-time*1e-1), cos(uv.x*10.-time*1e-1))*0.025;
+    uv.x += sin(time * -3e-1 + uv.y * 2e1) * map(uv.y, 1., -0.3, 1., 0.) * 2e-2;
+    // uv.x += abs(fract((uv.y-time*1e-2) * 5.)-0.5) * 0.1;
+    float c = length(uv);
+    uv *= 2.5;
+    uv.x *= 0.2;
+    float size = 8.;
+    float smoothness = 2e-2;
+    float c0 = length(uv+vec2(size,0.));
+    float c1 = length(uv-vec2(size,0.));
+    float c0A = smoothstep(size + smoothness, size, c0);
+    float c1A = smoothstep(size + smoothness, size, c1);
+    size *= 0.7;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    float c0B = smoothstep(size + smoothness * 2., size, c0);
+    float c1B = smoothstep(size + smoothness * 2., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    
+    c = max((c0A * c1A), (c0B * c1B * 0.95));
+    
+    // size *= 0.5;
+    c0 = length(uv+vec2(size,0.));
+    c1 = length(uv-vec2(size,0.));
+    c0B = smoothstep(size + smoothness * 6., size, c0);
+    c1B = smoothstep(size + smoothness * 6., size, c1);
+    // c = c0 - c1;
+    // c = c0+c1;
+    c = smoothstep(0., 1., c);
+    c = mix(c, smoothstep(0., 1., c), 0.5);
+    float halo = max((c0A * c1A), (c0B * c1B * 0.35));
+    // c = max(c, halo);
+    // c = c1 * 0.5 + c0 * 0.5;
+    float noise = rand(uv + sin(time)) * 0.05;
+    gl_FragColor = vec4(vec3(c), 1.0);
+    gl_FragColor = vec4(vec3(1.0, pow(c,5.)*0.75, pow(c,5.)*0.5*0.75), (c+halo)*0.8-noise);
+}
+// endGLSL
+`);
+
 // Graze, symmetrical, blue horizontal waves
 setBothShaders(`
 // beginGLSL
@@ -705,6 +828,75 @@ void main() {
 // endGLSL
 `);
 
+// Flame research
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution.xy - vec2(0.5);
+    float ratio = resolution.x / resolution.y;
+    uv.x *= ratio;
+    uv.x *= (1.0-sin(uv.y*-2.5))*0.25;
+    float c = length(uv);
+    float c0 = length(uv+vec2(1.5,0.));
+    float c1 = length(uv-vec2(1.5,0.));
+    c0 = smoothstep(1.52, 1.5, c0);
+    c1 = smoothstep(1.52, 1.5, c1);
+    c = c1 * c0;
+    c = smoothstep(0., 1., c);
+    // c = c1 * 0.5 + c0 * 0.5;
+    float noise = rand(uv + sin(time)) * 0.05;
+    gl_FragColor = vec4(vec3(c), 1.0-noise);
+}
+// endGLSL
+`);
+
+// Flame research
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution.xy - vec2(0.5);
+    float ratio = resolution.x / resolution.y;
+    uv.x *= ratio;
+    uv.x *= (1.0-sin(uv.y*-2.5))*0.25;
+    uv.x += sin(uv.y*20.-time*4e-1)*0.0025*(uv.y+0.25);
+    uv.x += sin(uv.y*12.-time*8e-1)*0.005*(uv.y+0.25);
+    float c = length(uv);
+    float c0 = length(uv+vec2(1.5,0.));
+    float c1 = length(uv-vec2(1.5,0.));
+    c0 = smoothstep(1.52, 1.5, c0);
+    c1 = smoothstep(1.52, 1.5, c1);
+    c = c1 * c0;
+    c = smoothstep(0., 1., c);
+    // c = c1 * 0.5 + c0 * 0.5;
+    float noise = rand(uv + sin(time)) * 0.05;
+    gl_FragColor = vec4(vec3(c), 1.0-noise);
+    gl_FragColor = vec4(vec3(c, pow(c, 3.), pow(c, 5.)), 1.-noise);
+}
+// endGLSL
+`);
+
 // Graze, simple, via simple crossing of x and y
 setBothShaders(`
 // beginGLSL
@@ -734,7 +926,8 @@ void main() {
 // endGLSL
 `);
 
-// Graze, simple, via simple crossing of x and y
+// Graze, simple, via simple crossing of x and y.
+// Flashing animation of the graze opening up.
 setBothShaders(`
 // beginGLSL
 precision mediump float;
