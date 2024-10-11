@@ -22,7 +22,8 @@ function setup() {
     // cnvs = createCanvas(windowWidth, windowWidth / 16 * 9, WEBGL);
     noCanvas();
     cnvs = document.getElementById('my_Canvas');
-    gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
+    // gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
+    gl = cnvs.getContext('webgl', {antialias: false, depth: false});
     // canvasDOM = document.getElementById('my_Canvas');
     // canvasDOM = document.getElementById('defaultCanvas0');
     // gl = canvasDOM.getContext('webgl');
