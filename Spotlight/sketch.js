@@ -10,7 +10,7 @@ function setup() {
     noCanvas();
     cnvs = document.getElementById('cnvs');
     cnvs.width = window.innerWidth;
-    cnvs.height = window.innerHeight;
+    cnvs.height = window.innerWidth * (9 / 16);
     gl = cnvs.getContext('webgl', { preserveDrawingBuffer: true });
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
