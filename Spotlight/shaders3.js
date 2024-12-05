@@ -89,7 +89,9 @@ vec3 spotlight(vec2 uv, vec2 pos, float angle, float fog, float time) {
     c *= 1. - fog * 0.4;
     c = max(0., c);
     vec3 col = vec3(c, pow(c, 5.) * 0.5, pow(c, 3.) * 0.95);
-    col = hueShift2(col, pi * 0.75 * hue);
+    if (hue == 1.0) {
+        col = hueShift2(col, pi * 0.75 * hue);
+    }
     return col;
 }
 void main() {
