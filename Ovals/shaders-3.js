@@ -949,7 +949,197 @@ float x2 = mod(x + time*1e-1*sign(x), 30.);
 
 
 
+// Ellipses, circles, triangles
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
 }
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+vec2 hash(vec2 p) {
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+float noise( in vec2 p ) {
+    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+    const float K2 = 0.211324865; // (3-sqrt(3))/6;
+    vec2  i = floor(p + (p.x + p.y) * K1 );
+    vec2  a = p - i + (i.x + i.y) * K2;
+    float m = step(a.y, a.x); 
+    vec2  o = vec2(m, 1.0 - m);
+    vec2  b = a - o + K2;
+    vec2  c = a - 1.0 + 2.0 * K2;
+    vec3  h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
+    vec3  n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+    return dot(n, vec3(70.0));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    
+    float rando = rand(uv+time*1e-2) * 0.025;
+    float x = length(uv*20.25);
+    float a = 16.;
+    float b = mod(x * a - a*0.5, a) - (a*0.5);
+    x = min(abs(b),sign(b))*sign(b)+floor(x);
+    x *= 0.1;
+    // x += 
+    gl_FragColor = vec4(vec3(1.0-x, 0., 0.), 1.);
+    gl_FragColor.rgb *= pow(1.0-dot(uv, uv), 6.);
+    // uv.y+= sin(time*1e-1);
+    float n = noise(vec2(uv.x*0.5, uv.y*10.+time*1e-3));
+    n += map(noise(vec2(uv.x*1., uv.y*70.+sin(uv.x*1.)+time*5e-2)), 0., 1., 0.75, 1.);
+    n = mix(n, map(noise(vec2(uv.x*2., uv.y*7.+time*5e-2)), 0., 1., 0.5, 1.), 0.25);
+    gl_FragColor.gb += pow(1.0-uv.y-0.4, 5.) * vec2(0.5, 0.35) * n * (1.-length(uv*0.75));
+    gl_FragColor.rgb -=-rando;
+    gl_FragColor.rgb += pow(1.0-dot(uv, uv), 6.) * (0.0-uv.y*3.) * 0.75;
+}
+// endGLSL
+`);
+
+
+
+// Ellipses, circles, triangles
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+vec2 hash(vec2 p) {
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+float noise( in vec2 p ) {
+    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+    const float K2 = 0.211324865; // (3-sqrt(3))/6;
+    vec2  i = floor(p + (p.x + p.y) * K1 );
+    vec2  a = p - i + (i.x + i.y) * K2;
+    float m = step(a.y, a.x); 
+    vec2  o = vec2(m, 1.0 - m);
+    vec2  b = a - o + K2;
+    vec2  c = a - 1.0 + 2.0 * K2;
+    vec3  h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
+    vec3  n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+    return dot(n, vec3(70.0));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    // uv*=0.75;
+    uv.y -= 0.2;
+    float rando = rand(uv+time*1e-2) * 0.025;
+    float x = length(vec2(uv.x+sin(uv.y*20.+time*0.5e-1)*0.01*0., max(0., uv.y))*20.25);
+    float a = 16.;
+    float b = mod(x * a - a*0.5, a) - (a*0.5);
+    float c = min(abs(b),sign(b))*sign(b);
+    c = smoothstep(0., 1., c);
+    // c = smoothstep(0., 1., c);
+    x = max(1.,c+floor(x));
+    x *= 0.1;
+    // x += 
+    gl_FragColor = vec4(vec3(1.0-x, 0., 0.), 1.);
+    gl_FragColor.rgb *= pow(1.0-dot(uv, uv), 6.) * 1.;
+    // uv.y+= sin(time*1e-1);
+    // uv.y += 0.2;
+    
+    uv.y += 0.2;
+    float n = noise(vec2(uv.x*0.5, uv.y*10.+time*1e-3));
+    n += map(noise(vec2(uv.x*1., uv.y*70.+sin(uv.x*1.)+time*5e-2)), 0., 1., 0.75, 1.);
+    n = mix(n, map(noise(vec2(uv.x*2., uv.y*7.+time*5e-2)), 0., 1., 0.5, 1.), 0.25);
+    gl_FragColor.gb += pow(1.0-uv.y-0.4, 5.) * vec2(0.5, 0.35) * n * (1.-length(uv*0.75));
+    gl_FragColor.rgb -=-rando;
+    
+    uv.y -= 0.1;
+    gl_FragColor.rgb += pow(1.0-dot(uv, uv), 6.) * (0.0-uv.y*3.) * 0.75;
+}
+// endGLSL
+`);
+
+
+
+// Ellipses, circles, triangles
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+vec2 hash(vec2 p) {
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+float noise( in vec2 p ) {
+    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+    const float K2 = 0.211324865; // (3-sqrt(3))/6;
+    vec2  i = floor(p + (p.x + p.y) * K1 );
+    vec2  a = p - i + (i.x + i.y) * K2;
+    float m = step(a.y, a.x); 
+    vec2  o = vec2(m, 1.0 - m);
+    vec2  b = a - o + K2;
+    vec2  c = a - 1.0 + 2.0 * K2;
+    vec3  h = max(0.5 - vec3(dot(a,a), dot(b,b), dot(c,c)), 0.0);
+    vec3  n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+    return dot(n, vec3(70.0));
+}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    
+    float rando = rand(uv) * 0.025;
+    float x = length(uv*20.25);
+    float x2 = mod(x + time*1e-1*sign(x), 30.);
+    float a = 16.;
+    float b = mod(x * a - a*0.5, a) - (a*0.5);
+    x = min(abs(b),sign(b))*sign(b)+floor(x);
+    x *= 0.05;
+    // x = smoothstep(0., 1., x);
+    vec3 c1 = vec3(1., 0., 0.);
+    vec3 c2 = mix(
+        vec3(0., 1., 1.).gbr,
+        vec3(0., 1., 1.),
+        // abs(map(atan(uv.y, uv.x), -pi, pi, -2., 2.))
+        smoothstep(0., 2., map(sin(atan(uv.y, uv.x)+(pi*-1.)+time*1e-1*0.), -1., 1., 0., 1.*(10.*x)))*1.65
+    );
+    vec3 c3 = mix(c2, c1, x);
+    gl_FragColor = vec4(c3*(1.-x)-rando, 1.);
+        // gl_FragColor.rgb *= pow(1.0-dot(uv+vec2(0., -0.25), uv+vec2(0., -0.25)), 6.);
+        float n = noise(vec2(uv.x*0.5, uv.y*10.+time*1e-3));
+    n += map(noise(vec2(uv.x*1., uv.y*70.+sin(uv.x*1.)+time*5e-2)), 0., 1., 0.75, 1.);
+    n = mix(n, map(noise(vec2(uv.x*2., uv.y*7.+time*5e-2)), 0., 1., 0.5, 1.), 0.25);
+    gl_FragColor.gb += pow(1.0-uv.y-0.4, 5.) * vec2(0.5, 0.35) * n * (1.-length(uv*0.75));
+    gl_FragColor.rgb -=-rando;
+    // gl_FragColor.rgb += pow(1.0-dot(uv, uv), 6.) * (0.0-uv.y*3.) * 0.75;
+}
+// endGLSL
+`);
+
+}
+
 
 
 
