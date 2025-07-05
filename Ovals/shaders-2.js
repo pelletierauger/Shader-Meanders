@@ -1134,6 +1134,650 @@ void main() {
 // endGLSL
 `);
 
+// Concentric ellipses
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    // uv = rotateUV(uv, time * -0.1, 0.5);
+    float ramp = fract(time * -1e-2);
+    float r = sdEllipse(uv * 10., vec2(2., 1.5));
+    r = 1. - r;
+    r = smoothstep(0., 1., r);
+    r = smoothstep(0., 1., r);
+    r = smoothstep(0., 1., r);
+    // r = r2-r;
+    r = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5));
+    float rr = r;
+    r = sin(r*15.-time*1e-1)*0.5+0.5;
+    r = r*-0.25;
+    r = 1.0-abs(r*4. - 0.5);
+    
+    r = smoothstep(0., 1., r)*2.;
+    // r = smoothstep(0., 1., r);
+    // r = r2;
+    float b = length(uv*10.);
+    b = smoothstep(0., 1., b);
+    b = smoothstep(0., 1., b);
+    b = smoothstep(0., 1., b);
+    // r = pow(r, 1.5)*1.
+    float my = min(1., 10.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.5);
+    // r *= sin(uv.y*5.+time*1.);
+    // r *= map(sin(atan(uv.y, uv.x)+(pi*-0.5)+time*1e-1), -1., 1., 0., 1.);
+    // r *= ramp;
+    gl_FragColor = vec4(vec3(r, pow(r,7.)*0.25, pow(r,7.)*0.5) - rando, 1.0);
+}
+// endGLSL
+`);
+
+// Concentric ellipses
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    // uv = rotateUV(uv, time * -0.1, 0.5);
+    float ramp = fract(time * -1e-2);
+    float r = sdEllipse(uv * 10., vec2(2., 1.5));
+    r = 1. - r;
+    r = smoothstep(0., 1., r);
+    r = smoothstep(0., 1., r);
+    r = smoothstep(0., 1., r);
+    // r = r2-r;
+    r = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5));
+    float rr = r;
+    r = sin(r*10.-time*1e-1)*0.5+0.5;
+    r = r*-0.25;
+    r = 1.0-abs(r*2. - 0.5);
+    
+    r = smoothstep(0., 1., r)*2.;
+    // r = smoothstep(0., 1., r);
+    // r = r2;
+    float b = length(uv*10.);
+    b = smoothstep(0., 1., b);
+    b = smoothstep(0., 1., b);
+    b = smoothstep(0., 1., b);
+    // r = pow(r, 1.5)*1.
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.5);
+    // r *= sin(uv.y*5.+time*1.);
+    // r *= map(sin(atan(uv.y, uv.x)+(pi*-0.5)+time*1e-1), -1., 1., 0., 1.);
+    // r *= ramp;
+    gl_FragColor = vec4(vec3(r, pow(r,7.)*0.25, pow(r,7.)*0.5) - rando, 1.0);
+    // gl_FragColor.rgb = hueShift(gl_FragColor.rgb, floor(mod(rr*10.-time*1e-1, pi)));
+}
+// endGLSL
+`);
+
+// Iris and concentric ellipses
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.5))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.+(pi*-0.5)+time*1e-1), -1., 1., 0.8, 1.0);
+    gl_FragColor.rgb += vec3(mp, 0., pow(mp, 7.)*0.5) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(ro2);
+}
+// endGLSL
+`);
+
+// Iris and concentric ovals, with hints of purple
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.25))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    // my += abs(pow(uv.x, 3.)) * (1.0-my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.+(length(uv)*100.)+(pi*-0.5)-time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.+(length(uv)*100.)+(pi*-0.5)-time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.+(length(uv)*300.)+(pi*-0.5)-time*1e-1), -1., 1., 0.8, 1.0);
+    gl_FragColor.rgb += vec3(mp, 0., pow(mp, 7.)*0.5) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(my);
+    // gl_FragColor.rgb -= rando;
+    float hl = 1.0-abs(pow(uv.x*3., 1.));
+    hl = smoothstep(0., 1., hl);
+    // gl_FragColor.b += hl * r * 0.2 * ry;
+    // gl_FragColor.rgb = vec3(hl);
+        if (ry == 1.) {
+        // gl_FragColor.g = pow(r, 3.)*0.4;
+            gl_FragColor.b += hl * r * 0.35 * ry;
+    } else {
+        // gl_FragColor.b = pow(r, 3.)*0.4;
+            gl_FragColor.r += hl * r * 0.5 * (1.-ry);
+    }
+}
+// endGLSL
+`);
+
+// Iris and concentric ovals, with hints of purple
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.25))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    // my += abs(pow(uv.x, 3.)) * (1.0-my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.+(length(uv)*100.)+(pi*-0.5)-time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.+(length(uv)*100.)+(pi*-0.5)-time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.+(length(uv)*300.)+(pi*-0.5)-time*1e-1), -1., 1., 0.8, 1.0);
+    gl_FragColor.rgb += vec3(mp, 0., pow(mp, 7.)*0.5) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(my);
+    // gl_FragColor.rgb -= rando;
+    float hl = 1.0-abs(pow(uv.x*3., 1.));
+    hl = smoothstep(0., 1., hl);
+    // gl_FragColor.b += hl * r * 0.2 * ry;
+    // gl_FragColor.rgb = vec3(hl);
+        if (ry == 1.) {
+        // gl_FragColor.g = pow(r, 3.)*0.4;
+            gl_FragColor.b += hl * r * 0.35 * ry;
+    } else {
+        // gl_FragColor.b = pow(r, 3.)*0.4;
+            gl_FragColor.r += hl * r * 0.5 * (1.-ry);
+    }
+}
+// endGLSL
+`);
+
+// Iris and concentric ovals, with hints of purple
+// Iris now fluctuates its hue
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.25))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    // my += abs(pow(uv.x, 3.)) * (1.0-my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.+(pi*-0.5)+time*1e-1), -1., 1., 0.8, 1.0);
+    float fluc = sin(time*0.5e-1+pi*0.5)*0.5+0.5;
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    gl_FragColor.rgb += mix(vec3(mp, 0., pow(mp, 7.)*0.5),vec3(mp, 0., pow(mp, 7.)*0.5).gbr+vec3(mp*0.2,0.,0.),fluc) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(my);
+    // gl_FragColor.rgb -= rando;
+    float hl = 1.0-abs(pow(uv.x*3., 1.));
+    hl = smoothstep(0., 1., hl);
+    // gl_FragColor.b += hl * r * 0.2 * ry;
+    // gl_FragColor.rgb = vec3(hl);
+        if (ry == 1.) {
+        // gl_FragColor.g = pow(r, 3.)*0.4;
+            gl_FragColor.b += hl * r * 0.35 * ry;
+    } else {
+        // gl_FragColor.b = pow(r, 3.)*0.4;
+            gl_FragColor.r += hl * r * 0.5 * (1.-ry);
+    }
+}
+// endGLSL
+`);
+
+// Iris and concentric ovals, with hints of purple
+// Iris fluctuates its hue
+// Iris is spiral-shaped and flows outward
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.25))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    // my += abs(pow(uv.x, 3.)) * (1.0-my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.-(length(uv)*100.)+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.-(length(uv)*100.)+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.-(length(uv)*300.)+(pi*-0.5)+time*1e-1), -1., 1., 0.8, 1.0);
+    float fluc = sin(time*0.5e-1+pi*0.5-length(uv)*4.)*0.5+0.5;
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    gl_FragColor.rgb += mix(vec3(mp, 0., pow(mp, 7.)*0.5),vec3(mp, 0., pow(mp, 7.)*0.5).gbr+vec3(mp*0.2,0.,0.),fluc) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(my);
+    // gl_FragColor.rgb -= rando;
+    float hl = 1.0-abs(pow(uv.x*3., 1.));
+    hl = smoothstep(0., 1., hl);
+    // gl_FragColor.b += hl * r * 0.2 * ry;
+    // gl_FragColor.rgb = vec3(hl);
+        if (ry == 1.) {
+        // gl_FragColor.g = pow(r, 3.)*0.4;
+            gl_FragColor.b += hl * r * 0.35 * ry;
+    } else {
+        // gl_FragColor.b = pow(r, 3.)*0.4;
+            gl_FragColor.r += hl * r * 0.5 * (1.-ry);
+    }
+}
+// endGLSL
+`);
+
+// Iris and concentric ovals, with hints of purple
+// Iris fluctuates its hue
+// Iris is spiral-shaped and flows outward
+// With chromatic oscillation
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(15., 15.), vec2(6., 1.25))*1.;
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    // my += abs(pow(uv.x, 3.)) * (1.0-my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*5., uv*5.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp = mp * mp * (3. - 2. * mp);
+    mp *= ro2;
+    float mp2 = max(0.,min(1.,1.0-dot(uv*15., uv*15.)));
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp2 = mp2 * mp2 * (3. - 2. * mp2);
+    mp *= 1.0-mp2;
+    mp *= map(sin(atan(uv.y, uv.x)*20.-(length(uv)*100.)+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*3.-(length(uv)*100.)+(pi*-0.5)+time*1e-1), -1., 1., 0.7, 1.0);
+    mp *= map(sin(atan(uv.y, uv.x)*37.-(length(uv)*300.)+(pi*-0.5)+time*1e-1), -1., 1., 0.8, 1.0);
+    float fluc = sin(time*0.5e-1+pi*0.5-length(uv)*4.)*0.5+0.5;
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    fluc = fluc * fluc * (3. - 2. * fluc);
+    gl_FragColor.rgb += mix(vec3(mp, 0., pow(mp, 7.)*0.5),vec3(mp, 0., pow(mp, 7.)*0.5).gbr+vec3(mp*0.2,0.,0.),fluc) * (1. - gl_FragColor.rgb);
+    // gl_FragColor.rgb = vec3(my);
+    // gl_FragColor.rgb -= rando;
+    float hl = 1.0-abs(pow(uv.x*3., 1.));
+    hl = smoothstep(0., 1., hl);
+    // gl_FragColor.b += hl * r * 0.2 * ry;
+    // gl_FragColor.rgb = vec3(hl);
+        if (ry == 1.) {
+        // gl_FragColor.g = pow(r, 3.)*0.4;
+            gl_FragColor.b += hl * r * 0.35 * ry;
+    } else {
+        // gl_FragColor.b = pow(r, 3.)*0.4;
+            gl_FragColor.r += hl * r * 0.5 * (1.-ry);
+    }
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.bgr, fluc);
+}
+// endGLSL
+`);
+
+// Concentric ellipses
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float ro2 = sdEllipse(uv * vec2(10., 10.), vec2(1., 0.25));
+    ro2 = 1.0 - ro2;
+    ro2 = clamp(0., 1., ro2);
+    // ro2 = ro2 * ro2 * (3. - 2. * ro2);
+    ro2 = smoothstep(0., 1., ro2);
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    float mp = max(0.,min(1.,1.0-dot(uv*vec2(0.1,1.)*17., uv*vec2(0.1,1.)*17.)));
+    mp = mp * mp * (3. - 2. * mp);
+    mp = 1.0 - mp;
+    // gl_FragColor.rgb -= 1.0-rr;
+    // gl_FragColor.rgb *= vec3(pow(sin(2.*atan(uv.y, uv.x)+(pi*-0.5)+time*1e-1*0.)*0.5+0.5, 0.5));
+    // gl_FragColor.rgb = vec3(mp, 0., pow(mp, 7.)*0.5);
+    // gl_FragColor.rgb *= vec3(my);
+}
+// endGLSL
+`);
+
+
+// Concentric ellipses
+setBothShaders(`
+// beginGLSL
+precision mediump float;
+#define pi 3.1415926535897932384626433832795
+varying vec2 vTexCoord;
+uniform float time;
+uniform vec2 resolution;
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453 * (2.0 + sin(co.x)));
+}
+float map(float value, float min1, float max1, float min2, float max2) {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+${sdEllipse + blendingMath}
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution;
+    uv = uv - 0.5;
+    uv.x *= 1280./720.;
+    float ro = sdEllipse(uv * vec2(5., 5.), vec2(3., 1.5))*10.;
+    float rr = ro;
+    ro -= time*1e-1;
+    float r = cos(ro+pi)*0.5+0.5;
+    float ry = mod(floor(ro/(pi*2.)), 2.);
+    float rando = rand(uv+vec2(time*1e-3)) * 0.05;
+    float rx = clamp(0., 1., 4. * r - 1.5);
+    float my = min(1., 5.*abs(uv.y));
+    my = my * my * (3. - 2. * my);
+    my = my * my * (3. - 2. * my);
+    r *= my;
+    r *= clamp(0., 1., 1.0-rr*0.05);
+    gl_FragColor = vec4(vec3(ry, 0., 1.0-ry)*r, 1.0);
+    if (ry == 0.) {
+        gl_FragColor.g = pow(r, 3.)*0.4;
+    } else {
+        gl_FragColor.b = pow(r, 3.)*0.4;
+    }
+    // float mp = max(0.,min(1.,1.0-dot(uv*17., uv*17.)));
+    // mp = mp * mp * (3. - 2. * mp);
+    // gl_FragColor.rgb += vec3(mp, 0., pow(mp, 7.)*0.5);
+}
+// endGLSL
+`);
+
 // Fluctuating ellipse
 // Works as a schematic version of an ouroboros
 setBothShaders(`
